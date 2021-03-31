@@ -1,0 +1,45 @@
+<!DOCHTML html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+
+<title> Plaid demo app</title>
+
+</head>
+
+<body>
+  <button id="link-button">Link account</button>
+
+  <script>
+
+  async function createPlaid() {
+
+    const linkToken = await $.get('/create-link-token');
+    console.log(linkToken);
+
+    const handler = Plaid.create({
+      token: linkToken,
+      onSuccess: function (publicToken, metadata) {
+        fetch('/exchange-token', {
+          method: 'POST',
+          body: JSON.stringify({ publicToken}),
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+      }
+  })
+
+  $("#link-button").on("click", function (e) {
+    handler.open();
+  })
+}
+
+createPlaid();
+
+  </script>
+</body>
+</html>
+
+
